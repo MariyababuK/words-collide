@@ -4,12 +4,11 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const dictionary = require('an-array-of-english-words'); // NEW: Import the dictionary
+const dictionary = require('an-array-of-english-words');
 
 const app = express();
 const server = http.createServer(app);
 
-// NEW: Create a Set for fast O(1) word lookups instead of slow array searching
 const dictionarySet = new Set(dictionary);
 
 const io = new Server(server, {
@@ -19,7 +18,14 @@ const io = new Server(server, {
   },
 });
 
+// NEW: Add a healthcheck route for Railway
+app.get('/', (req, res) => {
+  res.status(200).send('Words Collide backend is running!');
+});
+
 const games = {};
+
+// ... (The rest of your server.js code remains exactly the same) ...
 
 // --- Constants ---
 const ROUND_DURATION = 120;
@@ -28,7 +34,7 @@ const CONSONANTS = 'BCDFGHJKLMNPQRSTVWXYZ';
 const COMMON_WORDS = new Set(['the', 'and', 'for', 'you', 'are', 'with', 'was', 'not', 'but', 'from']);
 
 // --- Helper Functions ---
-const generateGameCode = () => { /* ... (no changes here) ... */
+const generateGameCode = () => {
     let code = '';
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (let i = 0; i < 4; i++) {
@@ -36,7 +42,7 @@ const generateGameCode = () => { /* ... (no changes here) ... */
     }
     return games[code] ? generateGameCode() : code;
 };
-const generateLetters = () => { /* ... (no changes here) ... */
+const generateLetters = () => {
     let letters = [];
     for (let i = 0; i < 8; i++) {
         letters.push(VOWELS[Math.floor(Math.random() * VOWELS.length)]);
@@ -46,13 +52,13 @@ const generateLetters = () => { /* ... (no changes here) ... */
     }
     return letters.sort(() => 0.5 - Math.random());
 };
-const calculateScore = (word) => { /* ... (no changes here) ... */
+const calculateScore = (word) => {
     if (word.length >= 5) return 20;
     if (word.length === 4) return 15;
     if (word.length === 3) return 10;
     return 0;
 };
-const canFormWord = (word, letters) => { /* ... (no changes here) ... */
+const canFormWord = (word, letters) => {
     const letterCounts = {};
     for (const letter of letters) {
         letterCounts[letter] = (letterCounts[letter] || 0) + 1;
@@ -63,7 +69,7 @@ const canFormWord = (word, letters) => { /* ... (no changes here) ... */
     }
     return true;
 };
-const getGameStateForClient = (game) => { /* ... (no changes here) ... */
+const getGameStateForClient = (game) => {
     if (!game) return null;
     return {
         gameCode: game.gameCode,
@@ -78,7 +84,7 @@ const getGameStateForClient = (game) => { /* ... (no changes here) ... */
 };
 
 // --- Game Logic ---
-const startRound = (gameCode) => { /* ... (no changes here) ... */
+const startRound = (gameCode) => {
     const game = games[gameCode];
     if (!game) return;
 
@@ -93,7 +99,7 @@ const startRound = (gameCode) => { /* ... (no changes here) ... */
         p.submittedWords = [];
         p.roundScore = 0;
         p.ready = false;
-        p.wantsToPlayAgain = false; // UPDATED: Reset for new game
+        p.wantsToPlayAgain = false;
     });
     
     io.to(gameCode).emit('gameUpdate', getGameStateForClient(game));
@@ -108,7 +114,7 @@ const startRound = (gameCode) => { /* ... (no changes here) ... */
     }, 1000);
 };
 
-const endRound = (gameCode) => { /* ... (no changes here) ... */
+const endRound = (gameCode) => {
     const game = games[gameCode];
     if (!game || game.status !== 'playing') return;
 
@@ -162,7 +168,7 @@ const createPlayer = (id, name) => ({
     roundsWon: 0,
     submittedWords: [],
     ready: false,
-    wantsToPlayAgain: false, // NEW: Add property for play again logic
+    wantsToPlayAgain: false,
 });
 
 
@@ -172,7 +178,7 @@ io.on('connection', (socket) => {
         const gameCode = generateGameCode();
         games[gameCode] = {
             gameCode,
-            players: [createPlayer(socket.id, playerName)], // UPDATED: Use creator function
+            players: [createPlayer(socket.id, playerName)],
             status: 'waiting',
             round: 0,
             letters: [],
@@ -187,7 +193,7 @@ io.on('connection', (socket) => {
         if (!game) return socket.emit('error', 'Game not found.');
         if (game.players.length >= 2) return socket.emit('error', 'Game is full.');
         
-        game.players.push(createPlayer(socket.id, playerName)); // UPDATED: Use creator function
+        game.players.push(createPlayer(socket.id, playerName));
         socket.join(gameCode);
         
         startRound(gameCode);
@@ -206,7 +212,6 @@ io.on('connection', (socket) => {
         if (!canFormWord(word, game.letters)) return socket.emit('invalidWord', 'Word contains unavailable letters.');
         if (player.submittedWords.includes(word)) return socket.emit('invalidWord', 'You already submitted that word.');
         
-        // NEW: The dictionary check!
         if (!dictionarySet.has(word)) {
             return socket.emit('invalidWord', `'${word.toUpperCase()}' is not a valid word.`);
         }
@@ -229,7 +234,6 @@ io.on('connection', (socket) => {
         }
     });
     
-    // UPDATED: 'playAgain' logic now requires both players to agree
     socket.on('playAgain', (gameCode) => {
         const game = games[gameCode];
         const player = game?.players.find(p => p.id === socket.id);
@@ -238,9 +242,7 @@ io.on('connection', (socket) => {
         player.wantsToPlayAgain = true;
         io.to(gameCode).emit('gameUpdate', getGameStateForClient(game));
 
-        // Check if the other player is also ready
         if (game.players.length === 2 && game.players.every(p => p.wantsToPlayAgain)) {
-            // Reset game state for a new match
             game.players.forEach(p => {
                 p.totalScore = 0;
                 p.roundScore = 0;
@@ -251,7 +253,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('disconnect', () => { /* ... (no changes here) ... */
+    socket.on('disconnect', () => {
         for (const gameCode in games) {
             const game = games[gameCode];
             const playerIndex = game.players.findIndex(p => p.id === socket.id);
