@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+    --primary-color: #008080; /* Teal */
+    --primary-dark: #006666;
+    --secondary-color: #f4f7f6;
+    --background-color: #FFFFFF;
+    --text-color: #333;
+    --text-light: #666;
+    --border-radius: 12px;
+    --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --success-color: #4CAF50;
+    --error-color: #F44336;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+header { display: none; }
+.card {
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    text-align: left;
+    width: 100%; /* ADD THIS LINE */
+    box-sizing: border-box; /* AND THIS FOR GOOD MEASURE */
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem 2rem;
+    text-align: center;
+}
+.card-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+}
+.card-header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.card-body {
+    padding: 2rem;
+}
+.card-body h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+/* Welcome Screen Specifics */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+.input-with-icon {
+    position: relative;
+}
+.input-with-icon .fas {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+}
+.input-field {
+    width: 100%;
+    padding: 12px 12px 12px 40px; /* Left padding for icon */
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    box-sizing: border-box; /* Important for padding */
+}
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.join-game-group {
+    display: flex;
+    flex-grow: 1;
+}
+.join-code-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-left: 15px; /* No icon */
+}
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover { background-color: var(--primary-dark); }
+.btn-secondary { background-color: var(--secondary-color); color: var(--primary-dark); border: 1px solid var(--primary-color); }
+.btn-secondary { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: 0; }
+.btn-secondary:hover { background-color: #e0e0e0; }
+
+.how-to-play {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
+.how-to-play h3 { text-align: center; margin-top: 0; }
+.how-to-play ul { list-style: none; padding: 0; }
+.how-to-play li { display: flex; align-items: flex-start; margin-bottom: 0.75rem; color: var(--text-light); }
+.how-to-play .icon { margin-right: 0.75rem; font-size: 1.2rem; }
+
+.footer-text { text-align: center; color: var(--text-light); margin-top: 2rem; }
+.waiting-message { text-align: center; }
+
+/* General Game Styles (from before, slightly tweaked) */
+.game-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 1.2rem; 
+    font-weight: bold;
+    padding: 1rem 2rem; /* Adjusted padding for in-game header */
+}
+.timer { background-color: var(--primary-dark); color: white; padding: 0.5rem 1rem; border-radius: 20px; }
+.letters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.letter-tile { background: var(--secondary-color); border: 1px solid #ddd; border-radius: var(--border-radius); padding: 1rem; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; aspect-ratio: 1 / 1; display: flex; justify-content: center; align-items: center; }
+.word-form { display: flex; margin-bottom: 1.5rem; }
+.word-form .input-field { flex-grow: 1; margin-right: 0.5rem; }
+.word-form .btn-submit { background-color: var(--success-color); }
+.player-info-container { display: flex; justify-content: space-around; gap: 1rem; }
+
+/* UPDATED: Player card style to look better inside the main card */
+.player-card { 
+    flex-basis: 48%; 
+    text-align: left; 
+    background: var(--secondary-color);
+    padding: 1rem 1.5rem; 
+    border-radius: var(--border-radius); 
+    border: 1px solid #e0e0e0;
+    /* Removed box-shadow */
+}
+.word-list { list-style-type: none; padding: 0; height: 150px; overflow-y: auto; background: var(--background-color); border-radius: var(--border-radius); padding: 10px; }
+.word-list li { padding: 5px; border-bottom: 1px solid #eee; text-transform: uppercase; }
+.round-end-screen, .game-over-screen { padding: 2rem; text-align: center;}
+.score-summary, .final-scores { display: flex; justify-content: space-around; margin: 2rem 0; }
+
+/* Notification & Loader */
+.notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: var(--border-radius); color: white; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000; }
+.notification.success { background-color: var(--success-color); }
+.notification.error { background-color: var(--error-color); }
+.loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid var(--primary-color); width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 1rem auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+    body { padding: 10px; }
+    .card-body { padding: 1rem; }
+    .button-group { flex-direction: column; align-items: stretch; }
+    .player-info-container { flex-direction: column; }
+}
